@@ -1,0 +1,563 @@
+{% extends 'base.html' %}
+
+{% block title %}เมนูอาหาร - Cherry on Top{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Prompt', sans-serif;
+        background: linear-gradient(135deg, #fce7f3 0%, #fff 100%);
+        min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+        font-size: 3rem;
+        color: #ec4899;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .header p {
+        font-size: 1.2rem;
+        color: #6b7280;
+    }
+
+    /* Filter Buttons */
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 50px;
+    }
+
+    .filter-btn {
+        padding: 12px 30px;
+        border: 2px solid #ec4899;
+        background: white;
+        color: #ec4899;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: #ec4899;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+    }
+
+    /* Menu Grid */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .menu-category {
+        margin-bottom: 60px;
+    }
+
+    .category-title {
+        font-size: 2rem;
+        color: #db2777;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #ec4899;
+        font-weight: 700;
+    }
+
+    /* Menu Card */
+    .menu-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .menu-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .menu-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .menu-card:hover .menu-image {
+        transform: scale(1.1);
+    }
+
+    .menu-content {
+        padding: 25px;
+    }
+
+    .menu-title {
+        font-size: 1.4rem;
+        color: #1f2937;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .menu-description {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        line-height: 1.6;
+    }
+
+    .menu-price {
+        font-size: 2rem;
+        color: #ec4899;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .menu-rating {
+        color: #fbbf24;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+    .rating-text {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-left: 5px;
+    }
+
+    .add-to-cart {
+        width: 100%;
+        padding: 12px;
+        background: #ec4899;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .add-to-cart:hover {
+        background: #db2777;
+        transform: scale(1.05);
+    }
+
+    /* Badge */
+    .badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #ec4899;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 10;
+    }
+
+    .badge.best-seller {
+        background: #dc2626;
+    }
+
+    /* Hidden class */
+    .hidden {
+        display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2rem;
+        }
+
+        .header p {
+            font-size: 1rem;
+        }
+
+        .menu-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>🍽️ เมนูขนมหวาน</h1>
+        <p>ขนมหวานและเครื่องดื่มสดใหม่ ปรุงด้วยความรักทุกวัน</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterMenu('all')">ทั้งหมด</button>
+        <button class="filter-btn" onclick="filterMenu('main')">ขนมหวานที่มาแล้วต้องลอง</button>
+        <button class="filter-btn" onclick="filterMenu('dessert')">ขนมเค้กจัดวันเกิด</button>
+        <button class="filter-btn" onclick="filterMenu('drink')">เครื่องดื่ม</button>
+        <button class="filter-btn" onclick="filterMenu('bakery')">เบเกอรี่อบสดใหม่</button>
+    </div>
+
+    <!-- ขนมหวานที่มาแล้วต้องลอง -->
+    <div class="menu-category" data-category="main">
+        <h2 class="category-title">🌟 ขนมหวานที่มาแล้วต้องลอง</h2>
+        <div class="menu-grid">
+            <!-- Item 1 -->
+            <div class="menu-card">
+                <div class="badge">เมนูแนะนำ</div>
+                <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง มิกซ์เบอร์รี่</h3>
+                    <p class="menu-description">ทิมเบอร์ริงมี 5 รสชาติ หอมหวาน เนื้อนุ่ม</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.5/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง ชาเขียว">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง ชาเขียว</h3>
+                    <p class="menu-description">ทิมเบอร์ริงชาเขียวหอมกลิ่นชาเขียวแท้</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.2/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-card">
+                <div class="badge best-seller">เมนูขายดี</div>
+                <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง บลูเบอร์รี่">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง บลูเบอร์รี่</h3>
+                    <p class="menu-description">ทิมเบอร์ริง บลูเบอร์รี่สดใหม่</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★★ <span class="rating-text">(5.0/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1587241321921-91a834d6d191?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง ชาเขียวพิเศษ">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง ชาเขียวพิเศษ</h3>
+                    <p class="menu-description">ทิมเบอร์ริง ชาเขียวใส่แน่นๆ</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.3/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1557925923-cd4648e211a0?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง วนิลา">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง วนิลา</h3>
+                    <p class="menu-description">ทิมเบอร์ริง วนิลาหอมหวาน</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.1/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop" class="menu-image" alt="ทิมเบอร์ริง สตรอเบอร์รี่">
+                <div class="menu-content">
+                    <h3 class="menu-title">ทิมเบอร์ริง สตรอเบอร์รี่</h3>
+                    <p class="menu-description">ทิมเบอร์ริง สตรอเบอร์รี่สดใหม่</p>
+                    <div class="menu-price">59฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.4/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ขนมเค้กจัดวันเกิด -->
+    <div class="menu-category" data-category="dessert">
+        <h2 class="category-title">🎂 ขนมเค้กจัดวันเกิด</h2>
+        <div class="menu-grid">
+            <!-- Item 1 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop" class="menu-image" alt="เค้กผลไม้">
+                <div class="menu-content">
+                    <h3 class="menu-title">เค้กผลไม้</h3>
+                    <p class="menu-description">เค้กผลไม้ มาพร้อมกับวิปครีม</p>
+                    <div class="menu-price">135฿</div>
+                    <div class="menu-rating">
+                        ★★★★★ <span class="rating-text">(4.9/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-card">
+                <div class="badge best-seller">เมนูขายดี</div>
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop" class="menu-image" alt="เค้กช็อคโกแลต">
+                <div class="menu-content">
+                    <h3 class="menu-title">เค้กช็อคโกแลต</h3>
+                    <p class="menu-description">เค้กช็อกโกแลต หอมหวาน ช็อคโกแลตเข้มข้น</p>
+                    <div class="menu-price">150฿</div>
+                    <div class="menu-rating">
+                        ★★★★★ <span class="rating-text">(4.9/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400&h=300&fit=crop" class="menu-image" alt="เค้กสตรอเบอร์รี่">
+                <div class="menu-content">
+                    <h3 class="menu-title">เค้กสตรอเบอร์รี่ช็อกโกแล็ต</h3>
+                    <p class="menu-description">สตรอเบอร์รี่สดใหม่มาพร้อมกับช็อคโกแล็ตเข้มข้น</p>
+                    <div class="menu-price">160฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.7/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1542326146-9d2e67f5f8b6?w=400&h=300&fit=crop" class="menu-image" alt="เค้กชาเขียว">
+                <div class="menu-content">
+                    <h3 class="menu-title">เค้กชาเขียว</h3>
+                    <p class="menu-description">เนื้อมนุ่มละมุนลิ้น ชาเขียวเข้มข้น</p>
+                    <div class="menu-price">160฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.6/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- เครื่องดื่ม -->
+    <div class="menu-category" data-category="drink">
+        <h2 class="category-title">☕ เครื่องดื่ม</h2>
+        <div class="menu-grid">
+            <!-- Item 1 -->
+            <div class="menu-card">
+                <div class="badge best-seller">ขายดี</div>
+                <img src="https://images.unsplash.com/photo-1576092768234-944d8a46c92d?w=400&h=300&fit=crop" class="menu-image" alt="ชาไทย">
+                <div class="menu-content">
+                    <h3 class="menu-title">ชาไทยโบราณ</h3>
+                    <p class="menu-description">ชาไทยสูตรต้นตำรับ หอมหวาน เสิร์ฟเย็นจัด</p>
+                    <div class="menu-price">60฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.3/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=300&fit=crop" class="menu-image" alt="คาเฟ่ ลาเต้">
+                <div class="menu-content">
+                    <h3 class="menu-title">คาเฟ่ ลาเต้</h3>
+                    <p class="menu-description">เอสเปรสโซ่เข้มข้นผสมนมสด ลาเต้อาร์ตสวยงาม</p>
+                    <div class="menu-price">85฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.6/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-card">
+                <div class="badge">แนะนำ</div>
+                <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=400&h=300&fit=crop" class="menu-image" alt="สมูทตี้">
+                <div class="menu-content">
+                    <h3 class="menu-title">สมูทตี้ผลไม้รวม</h3>
+                    <p class="menu-description">สมูทตี้ผลไม้สดใส อุดมด้วยวิตามิน เย็นชื่นใจ</p>
+                    <div class="menu-price">95฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.4/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=300&fit=crop" class="menu-image" alt="น้ำส้มคั้นสด">
+                <div class="menu-content">
+                    <h3 class="menu-title">น้ำส้มคั้นสด</h3>
+                    <p class="menu-description">น้ำส้มสดใหม่ คั้นทันที อุดมไปด้วยวิตามินซี</p>
+                    <div class="menu-price">70฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.1/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1536013564761-22e0d7c8c7c7?w=400&h=300&fit=crop" class="menu-image" alt="มัทฉะ">
+                <div class="menu-content">
+                    <h3 class="menu-title">มัทฉะ ลาเต้เย็น</h3>
+                    <p class="menu-description">ชาเขียวมัทฉะแท้จากญี่ปุ่น หอมหวานมัน</p>
+                    <div class="menu-price">90฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.5/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=400&h=300&fit=crop" class="menu-image" alt="โกโก้เย็น">
+                <div class="menu-content">
+                    <h3 class="menu-title">โกโก้เย็น</h3>
+                    <p class="menu-description">โกโก้เข้มข้น หอมหวาน เย็นสดชื่น</p>
+                    <div class="menu-price">75฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.2/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- เบเกอรี่อบสดใหม่ -->
+    <div class="menu-category" data-category="bakery">
+        <h2 class="category-title">🥐 เบเกอรี่อบสดใหม่ทุกวัน</h2>
+        <div class="menu-grid">
+            <!-- Item 1 -->
+            <div class="menu-card">
+                <div class="badge">อบสดใหม่</div>
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop" class="menu-image" alt="ครัวซองต์">
+                <div class="menu-content">
+                    <h3 class="menu-title">ครัวซองต์เนย</h3>
+                    <p class="menu-description">ครัวซองต์อบสดใหม่ เนยแท้ กรอบนอกนุ่มใน</p>
+                    <div class="menu-price">45฿</div>
+                    <div class="menu-rating">
+                        ★★★★★ <span class="rating-text">(4.8/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop" class="menu-image" alt="เดนิช">
+                <div class="menu-content">
+                    <h3 class="menu-title">เดนิช บลูเบอร์รี่</h3>
+                    <p class="menu-description">เดนิชอบกรอบ ใส่บลูเบอร์รี่สดๆ</p>
+                    <div class="menu-price">55฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.6/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-card">
+                <img src="https://images.unsplash.com/photo-1608198093002-ad4e005484ec?w=400&h=300&fit=crop" class="menu-image" alt="ขนมปังชาเขียว">
+                <div class="menu-content">
+                    <h3 class="menu-title">ขนมปังชาเขียว</h3>
+                    <p class="menu-description">ขนมปังชาเขียวนุ่ม หอมชาเขียวแท้</p>
+                    <div class="menu-price">40฿</div>
+                    <div class="menu-rating">
+                        ★★★★☆ <span class="rating-text">(4.4/5)</span>
+                    </div>
+                    <button class="add-to-cart">🛒 เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterMenu(category) {
+    // Get all sections
+    const sections = document.querySelectorAll('.menu-category');
+    
+    // Get all buttons
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    // Remove active class from all buttons
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active to clicked button
+    event.target.classList.add('active');
+    
+    // Show/hide sections
+    sections.forEach(section => {
+        if (category === 'all') {
+            section.classList.remove('hidden');
+        } else {
+            if (section.getAttribute('data-category') === category) {
+                section.classList.remove('hidden');
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+    });
+    
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+{% endblock %}
+
