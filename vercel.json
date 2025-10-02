@@ -1,11 +1,5 @@
 {
-    "buildCommand": "pip install -r requirements.txt && python manage.py collectstatic --noinput",
-    "outputDirectory": "staticfiles",
-    "framework": null,
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/api/index.py"
-        }
-    ]
+    "devCommand": "python manage.py runserver",
+    "buildCommand": "python build_files.sh",
+    "cleanUrls": true
 }
