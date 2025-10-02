@@ -1,8 +1,8 @@
-# Install python dependencies
+
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Collect static files
+python3 some_script.py
 python manage.py collectstatic --noinput
 
 # Make migrations
