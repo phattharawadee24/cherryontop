@@ -1,16 +1,11 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-# 👇 แก้ตรงนี้ให้ถูกกับชื่อแอปของคุณ (สมมุติชื่อแอปคือ main)
-from main import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('login/', views.login_view, name='login'),
+    path('', include('myapp.urls')),
 ]
 
 
