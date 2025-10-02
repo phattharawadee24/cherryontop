@@ -17,7 +17,7 @@ def login_view(request):
             return redirect('home')
         else:
             error = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'
-    return render(request, 'login.html', {'error': error})
+    return render(request, 'myapp/login.html', {'error': error})
 
 def register(request):
     error = None
@@ -51,28 +51,6 @@ def delivery(request):
 
 def trackorder(request):
     return render(request, 'myapp/trackorder.html')
-    error = None
-
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-
-        # เช็คข้อมูลเบื้องต้น
-        if not username or not password1 or not password2:
-            error = "กรุณากรอกข้อมูลให้ครบ"
-        elif password1 != password2:
-            error = "รหัสผ่านไม่ตรงกัน"
-        elif User.objects.filter(username=username).exists():
-            error = "ชื่อผู้ใช้นี้ถูกใช้แล้ว"
-        else:
-            # สมัครสมาชิกสำเร็จ
-            User.objects.create_user(username=username, password=password1)
-
-            # 👉 เปลี่ยนหน้านี้ให้ redirect ไปที่ "login"
-            return redirect(reverse('login'))  # หรือ redirect('login') ถ้าตั้งชื่อ url ถูกแล้ว
-
-    return render(request, 'register.html', {'error': error})
 
 @login_required
 def order_status(request):
