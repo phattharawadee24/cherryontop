@@ -27,11 +27,11 @@ IS_VERCEL = os.environ.get('VERCEL', False)
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-%v4ah5iz$dpyza%ysnv28g9=tz39w&qvu@uq+iq^9^l%y=oqzo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = False
 
 
 
-ALLOWED_HOSTS = ['*', '.vercel.app', '.now.sh']
+ALLOWED_HOSTS = ['*', '.vercel.app']
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,15 +124,9 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-if not IS_VERCEL:
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'templates/statics'),
-    ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Simplified static file serving
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'templates/statics')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files
 MEDIA_URL = '/media/'
