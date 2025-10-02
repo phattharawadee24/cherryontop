@@ -38,9 +38,42 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="hero-image">
-                        
+                        <div id="map" style="height: 400px; width: 100%; border-radius: 15px;"></div>
                     </div>
                 </div>
+                
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
+<script>
+function initMap() {
+    // กำหนดตำแหน่งร้าน Cherry on Top (ตั้งไว้ที่กรุงเทพฯ)
+    const shopLocation = { lat: 13.7563, lng: 100.5018 };
+    
+    // สร้างแผนที่
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: shopLocation,
+    });
+    
+    // เพิ่มมาร์กเกอร์ตำแหน่งร้าน
+    const marker = new google.maps.Marker({
+        position: shopLocation,
+        map: map,
+        title: "Cherry on Top",
+    });
+    
+    // เพิ่มวงกลมแสดงรัศมีการจัดส่ง (15 กิโลเมตร)
+    const deliveryRadius = new google.maps.Circle({
+        strokeColor: "#FF4081",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF4081",
+        fillOpacity: 0.1,
+        map: map,
+        center: shopLocation,
+        radius: 15000, // 15 กิโลเมตร
+    });
+}
+</script>
             </div>
         </div>
     </div>

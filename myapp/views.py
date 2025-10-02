@@ -46,8 +46,12 @@ def home(request):
 def menu(request):
     return render(request, 'myapp/menu.html')
 
+from django.conf import settings
+
 def delivery(request):
-    return render(request, 'myapp/delivery.html')
+    return render(request, 'myapp/delivery.html', {
+        'google_maps_api_key': settings.GOOGLE_MAPS_API_KEY
+    })
 
 def trackorder(request):
     return render(request, 'myapp/trackorder.html')
