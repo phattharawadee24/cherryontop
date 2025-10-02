@@ -2,5 +2,5 @@
 import os
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cherryon_top.settings")
 app = get_wsgi_application()
